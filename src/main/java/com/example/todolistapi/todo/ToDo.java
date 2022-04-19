@@ -1,10 +1,7 @@
-package com.example.todolistapi;
+package com.example.todolistapi.todo;
 
 import com.example.todolistapi.subtodo.SubToDo;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,6 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 public class ToDo {
     @Id
@@ -27,11 +25,18 @@ public class ToDo {
 
     @CreationTimestamp
     @Column(updatable = false, nullable = false)
-    Date createdAt;
+    private Date createdAt;
 
     @UpdateTimestamp
-    Date updatedAt;
+    private Date updatedAt;
 
-    @OneToMany(mappedBy = "toDo")
+    @OneToMany(mappedBy = "toDo", cascade = CascadeType.PERSIST)
     private List<SubToDo> subToDoList;
+
+    private boolean isComplete;
+
+    public ToDoResponseDTO convertToResponse(){
+        return ToDoResponseDTO.builder().id(this.id).title(this.title).createdAt(this.createdAt)
+                .updatedAt(this.updatedAt).subToDoList(this.subToDoList).build();
+    }
 }
